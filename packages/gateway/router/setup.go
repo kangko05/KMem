@@ -18,5 +18,9 @@ func New(c *cache.Cache, dur time.Duration) *gin.Engine {
 		ctx.String(http.StatusOK, "pong")
 	})
 
+	// connecting with other services here - going to call grpc functions from its handlers
+	setupFileApi(r)
+	setupAuthApi(r)
+
 	return r
 }
