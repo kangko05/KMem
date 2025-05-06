@@ -145,7 +145,7 @@ func TestCacheResponse(t *testing.T) {
 		return true
 	})
 
-	assert.True(found, "캐시에 항목이 저장되어야 합니다")
+	assert.True(found, "item must be stored in cache")
 
 	req2, _ := http.NewRequest("GET", "/ping", nil)
 	w2 := httptest.NewRecorder()
