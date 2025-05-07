@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "./protogen";
+
+enum UploadStatus {
+    SUCCESS = 0;
+    FAIL = 1;
+}
+
+message UploadRequest {
+    bytes chunk = 1;
+    string filename = 2;
+}
+
+message UploadReply {
+    UploadStatus status = 1;
+    string msg = 2;
+}
+
+message PingRequest {}
+message PingReply {
+    string msg = 1;
+}
+
+service FileService {
+    rpc Ping(PingRequest) returns (PingReply) {}
+    rpc Upload(stream UploadRequest) returns (UploadReply) {}
+}
