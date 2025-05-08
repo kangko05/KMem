@@ -26,7 +26,7 @@ func initServices(ctx context.Context) (*services, error) {
 	}
 
 	go c.Run(ctx)
-	go uq.Run(ctx)
+	// go uq.Run(ctx)
 
 	return &services{cache: c, uploadQueue: uq}, nil
 }

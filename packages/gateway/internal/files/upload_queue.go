@@ -13,7 +13,7 @@ import (
 )
 
 type UploadQueue struct {
-	uq     *utils.Queue[*multipart.FileHeader]
+	uq     *utils.Queue[*multipart.Form]
 	conn   *grpc.ClientConn
 	client pb.FileServiceClient
 }
@@ -25,13 +25,13 @@ func NewUploadQueue() (*UploadQueue, error) {
 	}
 
 	return &UploadQueue{
-		uq:     utils.NewQueue[*multipart.FileHeader](),
+		uq:     utils.NewQueue[*multipart.Form](),
 		conn:   conn,
 		client: pb.NewFileServiceClient(conn),
 	}, nil
 }
 
-func (uq *UploadQueue) Add(fh *multipart.FileHeader) {
+func (uq *UploadQueue) Add(fh *multipart.Form) {
 	uq.uq.Add(fh)
 }
 
@@ -39,48 +39,65 @@ func (uq *UploadQueue) Add(fh *multipart.FileHeader) {
 // TODO: Implement structured logging with proper levels (info, error, debug)
 // TODO: Add metrics collection for upload attempts, successes, and failures
 func (uq *UploadQueue) Run(ctx context.Context) {
-	uq.uq.Run(ctx, func(fh *multipart.FileHeader) {
-		file, err := fh.Open()
-		if err != nil {
-			log.Printf("failed to open fileheader: %v", err)
+	uq.uq.Run(ctx, func(form *multipart.Form) {
+		files := form.File["files"]
+		if len(files) == 0 {
+			log.Println("no files have been uploaded")
 			return
 		}
-		defer file.Close()
+		// defer form.RemoveAll()
 
-		stream, err := uq.client.Upload(ctx)
-		if err != nil {
-			log.Printf("failed to connect to file-service: %v", err)
-			return
-		}
-
-		filename := fh.Filename
-		buffer := make([]byte, 1<<20)
-		for {
-			n, err := file.Read(buffer)
-			if err == io.EOF {
-				break
-			}
+		for _, fh := range files {
+			file, err := fh.Open()
 			if err != nil {
-				log.Printf("failed to read from file: %v", err)
+				log.Printf("failed to open fileheader: %v", err)
+				return
+			}
+			// defer file.Close()
+
+			stream, err := uq.client.Upload(ctx)
+			if err != nil {
+				log.Printf("failed to connect to file-service: %v", err)
+				file.Close()
 				return
 			}
 
-			if err := stream.Send(&pb.UploadRequest{Chunk: buffer[:n], Filename: filename}); err != nil {
-				log.Printf("failed to send stream to file-service: %v", err)
+			filename := fh.Filename
+			buffer := make([]byte, 1<<20)
+			for {
+				n, err := file.Read(buffer)
+				if err == io.EOF {
+					file.Close()
+					break
+				}
+				if err != nil {
+					log.Printf("failed to read from file: %v", err)
+					file.Close()
+					return
+				}
+
+				if err := stream.Send(&pb.UploadRequest{Chunk: buffer[:n], Filename: filename}); err != nil {
+					log.Printf("failed to send stream to file-service: %v", err)
+					file.Close()
+					return
+				}
+			}
+
+			reply, err := stream.CloseAndRecv()
+			if err != nil {
+				file.Close()
 				return
 			}
-		}
 
-		reply, err := stream.CloseAndRecv()
-		if err != nil {
-			return
-		}
+			if reply.GetStatus() == pb.UploadStatus_SUCCESS {
+				log.Printf("upload success: %s: %s", reply.GetMsg(), filename)
+			} else {
+				log.Printf("upload failed: %s: %s", reply.GetMsg(), filename)
+				file.Close()
+				return // err
+			}
 
-		if reply.GetStatus() == pb.UploadStatus_SUCCESS {
-			log.Printf("upload success: %s: %s", reply.GetMsg(), filename)
-		} else {
-			log.Printf("upload failed: %s: %s", reply.GetMsg(), filename)
-			return // err
+			file.Close()
 		}
 	})
 

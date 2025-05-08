@@ -68,7 +68,8 @@ func (q *Queue[T]) work(ctx context.Context, workerId int, f func(T)) {
 
 // move item to processing channel if processing channel is empty
 func (q *Queue[T]) manageItems(ctx context.Context) {
-	ticker := time.NewTicker(100 * time.Millisecond)
+	// ticker := time.NewTicker(100 * time.Millisecond)
+	ticker := time.NewTicker(time.Second)
 
 	for {
 		select {
