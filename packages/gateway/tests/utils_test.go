@@ -4,46 +4,10 @@ import (
 	"context"
 	"fmt"
 	"gateway/internal/utils"
-	"gateway/protogen"
-	"log"
-	"os"
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
-
-func TestT(t *testing.T) {
-	assert := assert.New(t)
-
-	conn, err := grpc.NewClient(utils.FILESERVICE, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	assert.Nil(err)
-	defer conn.Close()
-
-	log.Println("connection successful")
-
-	client := protogen.NewFileServiceClient(conn)
-
-	log.Println("client build successful")
-
-	stream, err := client.Upload(t.Context())
-	assert.Nil(err)
-
-	rb, err := os.ReadFile("/home/kang/Pictures/output2.jpg")
-	assert.Nil(err)
-
-	err = stream.Send(&protogen.UploadRequest{Chunk: rb, Filename: "output.jpg"})
-	assert.Nil(err)
-
-	reply, err := stream.CloseAndRecv()
-	assert.Nil(err)
-
-	log.Println(reply.GetStatus())
-	log.Println(reply.GetMsg())
-}
 
 func TestQueue(t *testing.T) {
 	t.Run("basic queue operations", func(t *testing.T) {
