@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"gateway/internal/cache"
-	"gateway/internal/files"
 	"gateway/internal/middlewares"
 	"net/http"
 	"time"
@@ -13,22 +12,16 @@ import (
 )
 
 type services struct {
-	cache       *cache.Cache
-	uploadQueue *files.UploadQueue
+	cache *cache.Cache
 }
 
 func initServices(ctx context.Context) (*services, error) {
 	c := cache.New()
 
-	uq, err := files.NewUploadQueue()
-	if err != nil {
-		return nil, fmt.Errorf("failed to start a upload queue: %v", err)
-	}
-
 	go c.Run(ctx)
-	go uq.Run(ctx)
+	// go uq.Run(ctx)
 
-	return &services{cache: c, uploadQueue: uq}, nil
+	return &services{cache: c}, nil
 }
 
 func New(ctx context.Context, dur time.Duration) (*gin.Engine, error) {
@@ -47,7 +40,7 @@ func New(ctx context.Context, dur time.Duration) (*gin.Engine, error) {
 	})
 
 	// connecting with other services here - going to call grpc functions from its handlers
-	setupFileApi(r, serv.uploadQueue)
+	setupFileApi(r)
 	setupAuthApi(r)
 
 	return r, nil
