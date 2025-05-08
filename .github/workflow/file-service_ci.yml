@@ -1,5 +1,8 @@
 name: File Service CI
 on:
+  push:
+    branches: ["main"]
+    paths: "packages/file-service/**"
   pull_request:
     branches: ["main", "feature/file-service"]
     paths: "packages/file-service/**"
