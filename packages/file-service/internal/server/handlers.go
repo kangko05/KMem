@@ -12,6 +12,8 @@ func (s *server) Ping(_ context.Context, _ *pb.PingRequest) (*pb.PingReply, erro
 }
 
 func (s *server) Upload(stream pb.FileService_UploadServer) error {
+	fmt.Println("===> Got upload request")
+
 	req, err := stream.Recv()
 	if err == io.EOF {
 		return stream.SendAndClose(&pb.UploadReply{

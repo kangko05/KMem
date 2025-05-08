@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"gateway/cache"
-	"gateway/router"
-	"gateway/utils"
+	"gateway/internal/router"
+	"gateway/internal/utils"
+	"log"
 	"time"
 )
 
@@ -12,10 +12,12 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	c := cache.New()
-	r := router.New(c, time.Hour)
+	r, err := router.New(ctx, time.Hour)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	go c.Run(ctx)
-
-	r.Run(utils.PORT)
+	if err := r.Run(utils.PORT); err != nil {
+		log.Fatal(err)
+	}
 }

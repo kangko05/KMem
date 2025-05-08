@@ -26,7 +26,7 @@ func New(ctx context.Context) (*server, error) {
 
 	lis, err := net.Listen("tcp", "localhost:8001")
 	if err != nil {
-		return nil, fmt.Errorf("failed to build a tcp listener")
+		return nil, fmt.Errorf("failed to build a tcp listener: %v", err)
 	}
 
 	serv.ctx = ctx

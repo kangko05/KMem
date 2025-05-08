@@ -3,9 +3,9 @@ package router
 import "github.com/gin-gonic/gin"
 
 func setupAuthApi(r *gin.Engine) {
-	auth := r.Group("/auth")
+	authAPI := r.Group("/auth")
 	{
-		auth.POST("/login")
-		auth.POST("/refresh")
+		authAPI.POST("/login")
+		authAPI.POST("/refresh")
 	}
 }

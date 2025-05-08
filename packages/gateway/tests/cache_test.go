@@ -2,8 +2,8 @@ package tests
 
 import (
 	"fmt"
-	"gateway/cache"
-	"gateway/middlewares"
+	"gateway/internal/cache"
+	"gateway/internal/middlewares"
 	"net/http"
 	"net/http/httptest"
 	"sync"

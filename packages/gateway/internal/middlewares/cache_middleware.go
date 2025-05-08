@@ -3,7 +3,7 @@ package middlewares
 import (
 	"bytes"
 	"encoding/json"
-	"gateway/cache"
+	"gateway/internal/cache"
 	"net/http"
 	"time"
 

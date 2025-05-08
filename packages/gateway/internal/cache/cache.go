@@ -2,7 +2,7 @@ package cache
 
 import (
 	"context"
-	"gateway/utils"
+	"gateway/internal/utils"
 	"log"
 	"sync"
 	"time"
