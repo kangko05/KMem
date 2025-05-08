@@ -17,7 +17,6 @@ func Upload(uq *UploadQueue) func(*gin.Context) {
 			ctx.String(http.StatusBadRequest, "failed to upload: %v", err)
 			return
 		}
-		defer form.RemoveAll()
 
 		files := form.File["files"]
 		if len(files) == 0 {
