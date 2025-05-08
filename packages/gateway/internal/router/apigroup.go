@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func setupFileApi(r *gin.Engine, _ *files.UploadQueue) {
+func setupFileApi(r *gin.Engine) {
 	filesAPI := r.Group("/api/files")
 	{
 		filesAPI.POST("", files.Upload) // upload files
