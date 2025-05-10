@@ -5,5 +5,6 @@ const (
 )
 
 const (
-	FILESERVICE string = "localhost:8001"
+	// FILESERVICE string = "localhost:8001"
+	FILESERVICE string = "file-service:8001"
 )

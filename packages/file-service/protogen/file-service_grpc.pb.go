@@ -4,7 +4,7 @@
 // - protoc             v6.30.2
 // source: file-service.proto
 
-package protogen
+package auth
 
 import (
 	context "context"

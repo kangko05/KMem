@@ -18,6 +18,20 @@ function gen-gateway-proto() {
         --go_opt=paths=source_relative \
         --go-grpc_out=./packages/gateway/protogen \
         --go-grpc_opt=paths=source_relative -I ./proto file-service.proto
+
+    protoc --go_out=./packages/gateway/protogen \
+        --go_opt=paths=source_relative \
+        --go-grpc_out=./packages/gateway/protogen \
+        --go-grpc_opt=paths=source_relative -I ./proto auth-service.proto
+}
+
+function gen-auth-service-proto() {
+    rm -rf ./packages/auth-service/protogen/*
+
+    protoc --go_out=./packages/auth-service/protogen \
+        --go_opt=paths=source_relative \
+        --go-grpc_out=./packages/auth-service/protogen \
+        --go-grpc_opt=paths=source_relative -I ./proto auth-service.proto
 }
 
 case $1 in
@@ -27,8 +41,12 @@ case $1 in
 "gateway")
     gen-gateway-proto
     ;;
+"auth-service")
+    gen-auth-service-proto
+    ;;
 *) # going to re-build proto for all packages
     gen-file-service-proto
     gen-gateway-proto
+    gen-auth-service-proto
     ;;
 esac

@@ -4,7 +4,7 @@
 // 	protoc        v6.30.2
 // source: file-service.proto
 
-package protogen
+package auth
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -271,8 +271,7 @@ const file_file_service_proto_rawDesc = "" +
 	"\vFileService\x12\"\n" +
 	"\x04Ping\x12\f.PingRequest\x1a\n" +
 	".PingReply\"\x00\x12*\n" +
-	"\x06Upload\x12\x0e.UploadRequest\x1a\f.UploadReply\"\x00(\x01B\fZ\n" +
-	"./protogenb\x06proto3"
+	"\x06Upload\x12\x0e.UploadRequest\x1a\f.UploadReply\"\x00(\x01B\x11Z\x0f./protogen/authb\x06proto3"
 
 var (
 	file_file_service_proto_rawDescOnce sync.Once

@@ -24,7 +24,7 @@ type server struct {
 func New(ctx context.Context) (*server, error) {
 	var serv server
 
-	lis, err := net.Listen("tcp", "localhost:8001")
+	lis, err := net.Listen("tcp", "0.0.0.0:8001")
 	if err != nil {
 		return nil, fmt.Errorf("failed to build a tcp listener: %v", err)
 	}
